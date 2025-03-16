@@ -480,6 +480,7 @@ target_sources(rpcs3_emu PRIVATE
     NP/upnp_config.cpp
     NP/upnp_handler.cpp
     NP/ip_address.cpp
+    NP/clan_client.cpp
 )
 
 # Memory
@@ -657,6 +658,7 @@ target_link_libraries(rpcs3_emu
         3rdparty::opengl 3rdparty::stblib
         3rdparty::vulkan 3rdparty::glew
         3rdparty::libusb 3rdparty::wolfssl
+        3rdparty::libcurl
     PRIVATE
         3rdparty::glslang
 )
