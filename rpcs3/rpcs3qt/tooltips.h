@@ -253,6 +253,7 @@ public:
 		const QString bind          = tr("Interface IP Address to bind to.\nOnly available in custom configurations.");
 		const QString enable_upnp   = tr("Enable UPNP.\nThis will automatically forward ports bound on 0.0.0.0 if your router has UPNP enabled.");
 		const QString psn_country   = tr("Changes the RPCN country.");
+		const QString psn_clans_dns = tr("Changes the DNS server used for PSN Clans.\nIf empty, uses the one from 'DNS'.");
 
 		// system
 

@@ -43,8 +43,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>821</width>
-        <height>716</height>
+        <width>857</width>
+        <height>841</height>
        </rect>
       </property>
       <property name="sizePolicy">
@@ -54,7 +54,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="coreTab">
        <attribute name="title">
@@ -265,7 +265,7 @@
            </layout>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="coreTabRightLayout" stretch="0,0,0,0,0">
+           <layout class="QVBoxLayout" name="coreTabRightLayout" stretch="0,0,0,0">
             <item>
              <widget class="QGroupBox" name="gb_tsx">
               <property name="sizePolicy">
@@ -2307,6 +2307,25 @@
               </widget>
              </item>
              <item>
+              <widget class="QGroupBox" name="gb_psn_clans_dns">
+               <property name="title">
+                <string>Clans DNS Server</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_3">
+                <item>
+                 <widget class="QLineEdit" name="edit_psn_clans_dns">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
               <spacer name="networkTabSpacerRight">
                <property name="orientation">
                 <enum>Qt::Orientation::Vertical</enum>
@@ -4242,16 +4261,16 @@
              </item>
              <item>
               <widget class="QCheckBox" name="disableAsyncHostMM">
-                <property name="text">
-                  <string>Disable Asynchronous Memory Manager</string>
-                </property>
+               <property name="text">
+                <string>Disable Asynchronous Memory Manager</string>
+               </property>
               </widget>
              </item>
              <item>
               <widget class="QCheckBox" name="disableOnDiskShaderCache">
-                <property name="text">
-                  <string>Disable On-Disk Shader Cache</string>
-                </property>
+               <property name="text">
+                <string>Disable On-Disk Shader Cache</string>
+               </property>
               </widget>
              </item>
              <item>
@@ -4365,16 +4384,16 @@
              </item>
              <item>
               <widget class="QCheckBox" name="fixupPPUVNAN">
-                <property name="text">
-                  <string>PPU Vector NaN Fixup</string>
-                </property>
+               <property name="text">
+                <string>PPU Vector NaN Fixup</string>
+               </property>
               </widget>
              </item>
              <item>
               <widget class="QCheckBox" name="spuProfiler">
-                <property name="text">
-                  <string>SPU Profiler</string>
-                </property>
+               <property name="text">
+                <string>SPU Profiler</string>
+               </property>
               </widget>
              </item>
              <item>
@@ -4398,7 +4417,7 @@
           </item>
           <item>
            <widget class="QWidget" name="debug_more_stuff" native="true">
-            <layout class="QVBoxLayout" name="debug_more_stuff_layout" stretch="0,0,0,0,1">
+            <layout class="QVBoxLayout" name="debug_more_stuff_layout" stretch="0,0,0,0,1,0">
              <property name="leftMargin">
               <number>0</number>
              </property>
@@ -4459,23 +4478,23 @@
               </widget>
              </item>
              <item>
-             <widget class="QGroupBox" name="gb_vulkansched">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>Vulkan Queue Scheduler</string>
-              </property>
-              <layout class="QVBoxLayout" name="gb_vksched_layout">
-               <item>
-                <widget class="QComboBox" name="vulkansched"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
+              <widget class="QGroupBox" name="gb_vulkansched">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="title">
+                <string>Vulkan Queue Scheduler</string>
+               </property>
+               <layout class="QVBoxLayout" name="gb_vksched_layout">
+                <item>
+                 <widget class="QComboBox" name="vulkansched"/>
+                </item>
+               </layout>
+              </widget>
+             </item>
              <item>
               <widget class="QGroupBox" name="gb_debug_io">
                <property name="title">

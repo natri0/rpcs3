@@ -321,6 +321,8 @@ struct cfg_root : cfg::node
 
 		cfg::_enum<np_psn_status> psn_status{this, "PSN status", np_psn_status::disabled};
 		cfg::string country{this, "PSN Country", "us"};
+
+		cfg::string clans_dns{this, "Clans DNS Address", ""};
 	} net{this};
 
 	struct node_savestate : cfg::node

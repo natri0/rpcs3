@@ -1473,6 +1473,9 @@ settings_dialog::settings_dialog(std::shared_ptr<gui_settings> gui_settings, std
 	m_emu_settings->EnhanceCheckBox(ui->enable_upnp, emu_settings_type::EnableUpnp);
 	SubscribeTooltip(ui->enable_upnp, tooltips.settings.enable_upnp);
 
+	m_emu_settings->EnhanceLineEdit(ui->edit_psn_clans_dns, emu_settings_type::ClansDNSAddress);
+	SubscribeTooltip(ui->gb_psn_clans_dns, tooltips.settings.psn_clans_dns);
+
 	// Comboboxes
 
 	connect(ui->netStatusBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index)

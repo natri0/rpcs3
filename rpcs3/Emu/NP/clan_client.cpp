@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Crypto/utils.h>
+#include <Emu/system_config.h>
 #include <Emu/NP/clan_client.h>
 #include <wolfssl/wolfcrypt/coding.h>
 
@@ -43,6 +44,41 @@ namespace clan
 		// Tell curl to use the native CA store for certificate verification
 		curl_easy_setopt(curl, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NATIVE_CA);
 
+		std::string dns_server = g_cfg.net.clans_dns;
+		if (dns_server.empty())
+		{
+			dns_server = g_cfg.net.dns;
+		}
+
+		// Check if the address is valid
+		bool dns_ok = true;
+		if (!dns_server.empty())
+		{
+			std::string dns_no_port = dns_server.substr(0, dns_server.find(':'));
+			if (dns_no_port.empty())
+			{
+				clan_log.error("Provided Clans DNS server does not have an IP address: '%s'", dns_server);
+				dns_ok = false;
+			}
+
+			in_addr_t conv;
+			if (!inet_pton(AF_INET, dns_no_port.c_str(), &conv))
+			{
+				clan_log.error("Provided Clans DNS server IP is not valid: '%s'", dns_server);
+				dns_ok = false;
+			}
+		}
+
+		if (dns_ok)
+		{
+			// Add entries to CURLOPT_RESOLVE for the two domains used for Clans
+			curl_slist *servers;
+			servers = curl_slist_append(nullptr, std::format("clans-view01.ww.np.community.playstation.net:443:{}", dns_server).c_str());
+			servers = curl_slist_append(servers, std::format("clans-rec01.ww.np.community.playstation.net:443:{}", dns_server).c_str());
+
+			curl_easy_setopt(curl, CURLOPT_RESOLVE, servers);
+		}
+
 		return SceNpClansError::SCE_NP_CLANS_SUCCESS;
 	}
 
@@ -81,13 +117,6 @@ namespace clan
 
 		// Response memory buffer
 		memory mem = {0};
-
-		// Add DNS resolution
-		struct curl_slist *dns;
-
-		std::string dns_host = std::format("{}:443:{}", host, "127.0.0.1");
-		dns = curl_slist_append(NULL, dns_host.c_str());
-		curl_easy_setopt(curl, CURLOPT_RESOLVE, dns);
 
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
