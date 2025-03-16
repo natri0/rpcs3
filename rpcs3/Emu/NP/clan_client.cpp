@@ -6,29 +6,19 @@
 
 LOG_CHANNEL(clan_log, "clans");
 
-constexpr char* jid_format = "%s@un.br.np.playstation.net";
-
-struct memory
-{
-	char* response;
-	size_t size;
-};
+constexpr const char* jid_format = "%s@un.br.np.playstation.net";
 
 namespace clan
 {
 	size_t clan_client::curlWriteCallback(void* data, size_t size, size_t nmemb, void* clientp)
 	{
 		size_t realsize = size * nmemb;
-		struct memory* mem = static_cast<struct memory*>(clientp);
+		auto &mem = *static_cast<std::vector<char> *>(clientp);
 
-		char* ptr = static_cast<char*>(realloc(mem->response, mem->size + realsize + 1));
-		if (!ptr)
-			return 0; /* out of memory */
-
-		mem->response = ptr;
-		memcpy(&(mem->response[mem->size]), data, realsize);
-		mem->size += realsize;
-		mem->response[mem->size] = 0;
+		size_t offset = mem.size() - 1;
+		mem.resize(mem.size() + realsize);
+		memcpy(&mem[offset], data, realsize);
+		mem[mem.size() - 1] = '\0';
 
 		return realsize;
 	}
@@ -115,14 +105,15 @@ namespace clan
 		char err_buf[CURL_ERROR_SIZE];
 		err_buf[0] = '\0';
 
-		// Response memory buffer
-		memory mem = {0};
+		// static buffer for responses
+		static std::vector<char> response;
+		response.resize(0);
 
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriteCallback);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &mem);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, err_buf);
 
 		// Add POST data
@@ -144,7 +135,7 @@ namespace clan
 		// clan_log.todo("Clans API Response: %s", mem.response);
 
 		// Parse the response
-		pugi::xml_parse_result res = outResponse->load_string(mem.response);
+		pugi::xml_parse_result res = outResponse->load_string(response.data());
 
 		if (!res)
 		{
@@ -269,15 +260,15 @@ namespace clan
 				.info = SceNpClansClanBasicInfo{
 					.clanId = clanId,
 					.numMembers = members_int,
-					.name = "", // TODO: make sure this doesn't exceed the max length
+					.name = "",
 					.tag = "",
 					.reserved = {0, 0},
                 },
 				.role = static_cast<SceNpClansMemberRole>(role_int),
 				.status = static_cast<SceNpClansMemberStatus>(status_int)};
 
-			strcpy(entry.info.name, name_str.c_str());
-			strcpy(entry.info.tag, tag_str.c_str());
+			strncpy(entry.info.name, name_str.c_str(), SCE_NP_CLANS_CLAN_NAME_MAX_LENGTH);
+			strncpy(entry.info.tag, tag_str.c_str(), SCE_NP_CLANS_CLAN_TAG_MAX_LENGTH);
 
 			clanList[i] = entry;
 			i++;
@@ -434,9 +425,6 @@ namespace clan
         // Total results in the database
         pugi::xml_attribute total = list.attribute("total");
         uint32_t total_count = total.as_uint();
-
-		// Get the amount of `info` children
-		int count = std::distance(list.begin(), list.end());
 
         // Get each `info` node
         int i = 0;
@@ -612,39 +600,9 @@ namespace clan
 		pugi::xml_node filter = clan.append_child("filter");
 		pugi::xml_node name = filter.append_child("name");
 
-		char op_name[2 + 1] = {0};
-		switch (search->nameSearchOp)
-		{
-			case 0:
-				strncpy(op_name, "eq", 3);
-				break;
+		static const char *searchOpNames[] = { "eq", "ne", "gt", "ge", "lt", "le", "lk" };
 
-			case 1:
-				strncpy(op_name, "ne", 3);
-				break;
-
-			case 2:
-				strncpy(op_name, "gt", 3);
-				break;
-
-			case 3:
-				strncpy(op_name, "ge", 3);
-				break;
-
-			case 4:
-				strncpy(op_name, "lt", 3);
-				break;
-
-			case 5:
-				strncpy(op_name, "le", 3);
-				break;
-
-			default:
-				strncpy(op_name, "lk", 3);
-				break;
-		}
-
-		name.append_attribute("op").set_value(op_name);
+		name.append_attribute("op").set_value(searchOpNames[search->nameSearchOp]);
 		name.append_attribute("value").set_value(search->name);
 
         // Send request to server
@@ -821,7 +779,10 @@ namespace clan
 		if (binAttr1Size == UINT32_MAX)
 			return SCE_NP_CLANS_ERROR_INVALID_ARGUMENT;
 
-		status.text().set(binAttr1);
+		// if we don't explicitly cast it to a char ptr, chooses first available matching overload
+		// in this case, is set(bool)
+		// so instead of the base64 data it'd just send a 0x01 byte lol
+		status.text().set(reinterpret_cast<char *>(binAttr1));
 
 		pugi::xml_node allowMsg = clan.append_child("allow-msg");
 		allowMsg.text().set(static_cast<uint32_t>(info->allowMsg));

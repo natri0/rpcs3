@@ -97,8 +97,7 @@ error_code sceNpClansInit(vm::cptr<SceNpCommunicationId> commId, vm::cptr<SceNpC
 	}
 
 	// Allocate space for a client somewhere
-	clan::clan_client* client = static_cast<clan::clan_client*>(malloc(sizeof(clan::clan_client)));
-	clans_manager.client = client;
+	clans_manager.client = new clan::clan_client;
 	clans_manager.is_initialized = true;
 
 	return CELL_OK;
@@ -113,7 +112,7 @@ error_code sceNpClansTerm()
 		return SCE_NP_CLANS_ERROR_NOT_INITIALIZED;
 	}
 
-	clans_manager.client->~clan_client();
+	delete clans_manager.client;
 	clans_manager.is_initialized = false;
 
 	return CELL_OK;
@@ -1015,10 +1014,10 @@ error_code sceNpClansPostAnnouncement(vm::ptr<SceNpClansRequestHandle> handle, S
 		return SCE_NP_CLANS_ERROR_INVALID_ARGUMENT;
 	}
 
-	// if (!data) // Not necessary for Home
-	// {
-	// 	return SCE_NP_CLANS_ERROR_NOT_SUPPORTED;
-	// }
+	if (!data) // Not necessary for Home
+	{
+		return SCE_NP_CLANS_ERROR_NOT_SUPPORTED;
+	}
 
 	if (strlen(message->body) > SCE_NP_CLANS_ANNOUNCEMENT_MESSAGE_BODY_MAX_LENGTH || strlen(message->subject) > SCE_NP_CLANS_MESSAGE_SUBJECT_MAX_LENGTH) // TODO: correct max?
 	{
@@ -1069,6 +1068,7 @@ error_code sceNpClansRemoveAnnouncement(vm::ptr<SceNpClansRequestHandle> handle,
 	return CELL_OK;
 }
 
+// TODO: sceNpClansPostChallenge
 error_code sceNpClansPostChallenge(vm::ptr<SceNpClansRequestHandle> handle, SceNpClanId clanId, SceNpClanId targetClan, vm::cptr<SceNpClansMessage> message, vm::cptr<SceNpClansMessageData> data, u32 duration, vm::ptr<SceNpClansMessageId> mId)
 {
 	sceNpClans.todo("sceNpClansPostChallenge(handle=*0x%x, clanId=%d, targetClan=%d, message=*0x%x, data=*0x%x, duration=%d, mId=*0x%x)", handle, clanId, targetClan, message, data, duration, mId);
@@ -1096,6 +1096,7 @@ error_code sceNpClansPostChallenge(vm::ptr<SceNpClansRequestHandle> handle, SceN
 	return CELL_OK;
 }
 
+// TODO: sceNpClansRetrievePostedChallenges
 error_code sceNpClansRetrievePostedChallenges(vm::ptr<SceNpClansRequestHandle> handle, SceNpClanId clanId, SceNpClanId targetClan,  vm::cptr<SceNpClansPagingRequest> paging, vm::ptr<SceNpClansMessageEntry> mList, vm::ptr<SceNpClansPagingResult> pageResult)
 {
 	sceNpClans.todo("sceNpClansRetrievePostedChallenges(handle=*0x%x, clanId=%d, targetClan=%d, paging=*0x%x, mList=*0x%x, pageResult=*0x%x)", handle, clanId, targetClan, paging, mList, pageResult);
@@ -1121,6 +1122,7 @@ error_code sceNpClansRetrievePostedChallenges(vm::ptr<SceNpClansRequestHandle> h
 	return CELL_OK;
 }
 
+// TODO: sceNpClansRemovePostedChallenge
 error_code sceNpClansRemovePostedChallenge(vm::ptr<SceNpClansRequestHandle> handle, SceNpClanId clanId, SceNpClanId targetClan, SceNpClansMessageId mId)
 {
 	sceNpClans.todo("sceNpClansRemovePostedChallenge(handle=*0x%x, clanId=%d, targetClan=%d, mId=%d)", handle, clanId, targetClan, mId);
@@ -1133,6 +1135,7 @@ error_code sceNpClansRemovePostedChallenge(vm::ptr<SceNpClansRequestHandle> hand
 	return CELL_OK;
 }
 
+// TODO: sceNpClansRetrieveChallenges
 error_code sceNpClansRetrieveChallenges(vm::ptr<SceNpClansRequestHandle> handle, SceNpClanId clanId, vm::cptr<SceNpClansPagingRequest> paging, vm::ptr<SceNpClansMessageEntry> mList, vm::ptr<SceNpClansPagingResult> pageResult)
 {
 	sceNpClans.todo("sceNpClansRetrieveChallenges(handle=*0x%x, clanId=%d, paging=*0x%x, mList=*0x%x, pageResult=*0x%x)", handle, clanId, paging, mList, pageResult);
@@ -1158,6 +1161,7 @@ error_code sceNpClansRetrieveChallenges(vm::ptr<SceNpClansRequestHandle> handle,
 	return CELL_OK;
 }
 
+// TODO: sceNpClansRemoveChallenge
 error_code sceNpClansRemoveChallenge(SceNpClansRequestHandle handle, SceNpClanId clanId, SceNpClansMessageId mId)
 {
 	sceNpClans.todo("sceNpClansRemoveChallenge(handle=*0x%x, clanId=%d, mId=%d)", handle, clanId, mId);
